@@ -1,0 +1,1 @@
+export const getFilterContacts = store => store.filter;
