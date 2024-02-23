@@ -1,7 +1,10 @@
 import FormPhonebook from '../FormPhoneBook/FormPhoneBook';
 import Contact from '../Contact/Contact';
 import Filter from '../Filter/Filter';
-import { selecttAllFilteredContacts } from '../../redux/contacts/selector-contacts';
+import {
+  selectAllFilteredContacts,
+  selectContacts,
+} from '../../redux/contacts/selector-contacts';
 import { useDispatch, useSelector } from 'react-redux';
 import { setFilter } from '../../redux/filter/filter-slice';
 import {
@@ -12,7 +15,8 @@ import {
 import { useEffect } from 'react';
 
 const PageForm = () => {
-  const { items, error, loading } = useSelector(selecttAllFilteredContacts);
+  const { items } = useSelector(selectAllFilteredContacts);
+  const { error, loading } = useSelector(selectContacts);
 
   const dispatch = useDispatch();
   useEffect(() => {

@@ -1,26 +1,27 @@
+import { createSelector } from 'reselect';
 
-//  import { createSelector } from "@reduxjs/toolkit";
+export const selectContacts = store => store.contacts;
+export const selectFilter = store => store.filter;
 
-// export const selectContacts = state =>  state.items;
-// 
- 
-//  export const getAllContacts = store => store.contacts;
+export const selectAllFilteredContacts = createSelector(
+  [selectContacts, selectFilter],
+  (contacts, filter) => {
+    const { loading, error, items } = contacts;
 
-export const selecttAllFilteredContacts = store => {
-  const { contacts, filter } = store;
-    const{ loading, error } = contacts;
+    if (!filter) {
+      return contacts;
+    }
 
-  if (!filter) {
-    return contacts;
+    const filterNormalize = filter.toLowerCase();
+    const filteredContacts = items.filter(el => {
+      const checkedEl = el.name.toLowerCase();
+      return checkedEl.includes(filterNormalize);
+    });
+
+    return {
+      items: filteredContacts,
+      loading,
+      error,
+    };
   }
-  const filterNormalize = filter.toLowerCase();
-  const filteredContacts = contacts.items.filter(el => {
-    const checkedEl = el.name.toLowerCase();
-    return checkedEl.includes(filterNormalize);
-  });
-  return {
-    items:filteredContacts,
-    loading,
-    error,
-  };
-};
+);
