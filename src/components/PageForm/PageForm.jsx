@@ -1,36 +1,30 @@
-// import { useState, useEffect } from 'react';
 import FormPhonebook from '../FormPhoneBook/FormPhoneBook';
 import Contact from '../Contact/Contact';
 import Filter from '../Filter/Filter';
-import { getAllFilteredContacts } from '../../redux/contacts/selector-contacts';
+import { selecttAllFilteredContacts } from '../../redux/contacts/selector-contacts';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact, deleteContact } from '../../redux/contacts/contacts-slice';
 import { setFilter } from '../../redux/filter/filter-slice';
+import {
+  fetchContacts,
+  addContactInReduser,
+  deleteContactInReduser,
+} from '../../redux/contacts/contacts-operations';
+import { useEffect } from 'react';
 
 const PageForm = () => {
-  const contactsStore = useSelector(getAllFilteredContacts);
+  const { items, error, loading } = useSelector(selecttAllFilteredContacts);
 
   const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   const handlerFormSPhonebook = data => {
-    if (checkName(data)) {
-      return alert(`${data.name} is already in the list of contacts`);
-    }
-    dispatch(addContact(data));
-  };
-
-  const checkName = data => {
-    const normalizedDataName = data.name.toLowerCase();
-    const checkContact = contactsStore?.find(el => {
-      const normalizedCurrentName = el.name.toLowerCase();
-      return normalizedDataName === normalizedCurrentName;
-    });
-    return Boolean(checkContact);
+    dispatch(addContactInReduser(data));
   };
 
   const deleteContactForm = id => {
-    console.log(id);
-    dispatch(deleteContact(id));
+    dispatch(deleteContactInReduser(id));
   };
 
   const propsFilter = ({ target }) => dispatch(setFilter(target.value));
@@ -38,7 +32,11 @@ const PageForm = () => {
   return (
     <>
       <FormPhonebook handlerFormSPhonebook={handlerFormSPhonebook} />
-      <Contact contacts={contactsStore} deleteContact={deleteContactForm} />
+      {loading && <p>...Loading</p>}
+      {error && <p>{error}</p>}
+      {Boolean(items.length) && (
+        <Contact contacts={items} deleteContact={deleteContactForm} />
+      )}
       <Filter propsFilter={propsFilter} />
     </>
   );
